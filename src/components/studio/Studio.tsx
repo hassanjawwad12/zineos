@@ -8,10 +8,16 @@ import { Canvas } from "@/components/canvas/Canvas";
 import { StickerDrawer } from "@/components/drawer/StickerDrawer";
 import { LayersPanel } from "@/components/layers/LayersPanel";
 import { Button } from "@/components/ui/Button";
+import { useAutosave } from "@/hooks/useAutosave";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { toProxiedUrl } from "@/lib/giphy/url";
 import { parseAllowedGiphyUrl } from "@/lib/giphy/ssrf";
-import { useSceneStore } from "@/store/useSceneStore";
+import {
+  buildShareUrl,
+  encodeSceneToParam,
+  SHARE_PARAM,
+} from "@/lib/scene/share-url";
+import { getSceneSnapshot, useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
 /**
@@ -47,6 +53,7 @@ function probeImage(src: string): Promise<Probe> {
 
 export function Studio() {
   useKeyboardShortcuts();
+  useAutosave();
 
   const add = useSceneStore((s) => s.add);
   const clear = useSceneStore((s) => s.clear);
@@ -79,6 +86,26 @@ export function Studio() {
 
   function redo() {
     useSceneStore.temporal.getState().redo();
+  }
+
+  async function handleShare() {
+    const scene = getSceneSnapshot();
+    const base = window.location.origin + window.location.pathname;
+    const shareUrl = buildShareUrl(scene, base);
+    // Reflect the scene in the address bar so a reload/bookmark restores it.
+    window.history.replaceState(
+      null,
+      "",
+      `?${SHARE_PARAM}=${encodeSceneToParam(scene)}`,
+    );
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setStatus("share link copied to clipboard ✓");
+    } catch {
+      // Clipboard may be blocked (permissions/insecure context) — the URL is
+      // still in the address bar for the user to copy manually.
+      setStatus("share link is in the address bar");
+    }
   }
 
   async function addFromRawUrl(rawUrl: string) {
@@ -180,6 +207,13 @@ export function Studio() {
         </Button>
         <Button disabled={busy || order.length === 0} onClick={() => clear()}>
           Clear
+        </Button>
+        <Button
+          disabled={busy || order.length === 0}
+          onClick={handleShare}
+          title="Copy a shareable link to this collage"
+        >
+          Share
         </Button>
         <Button
           variant="primary"
