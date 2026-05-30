@@ -1,0 +1,53 @@
+.canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--canvas-bg);
+  touch-action: none; /* we own pointer gestures */
+  isolation: isolate;
+}
+
+/* Origin sits at the canvas center; nodes are positioned relative to it. */
+.canvas-origin {
+  position: absolute;
+  inset: 0;
+}
+
+.sticker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  /* center → translate to position → rotate → scale */
+  transform: translate(-50%, -50%) translate(var(--x), var(--y))
+    rotate(var(--rot)) scale(var(--scale));
+  will-change: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.sticker img {
+  display: block;
+  width: var(--base-w);
+  height: var(--base-h);
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.sticker.is-selected {
+  outline: 1.5px dashed var(--os-blue);
+  outline-offset: 3px;
+}
+
+.canvas-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-pixel);
+  color: oklch(40% 0.02 280);
+  text-align: center;
+  padding: var(--space-8);
+  pointer-events: none;
+}

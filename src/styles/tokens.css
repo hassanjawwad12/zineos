@@ -1,0 +1,109 @@
+/* =============================================================================
+   ZINEOS — design tokens (single source of truth for the locked aesthetic)
+   "HAUNTED OS / CHROME DREAM": disciplined Win98 chrome vs. chaotic Y2K canvas.
+   Two-layer rule — chrome layer = mono-gray + OS blue; ALL color lives on canvas.
+   ============================================================================= */
+
+:root {
+  /* === CANVAS LAYER: Y2K holographic accents (the loud layer) ============== */
+  --holo-cyan: oklch(86% 0.13 200);
+  --holo-magenta: oklch(78% 0.19 350); /* bubblegum */
+  --holo-lavender: oklch(80% 0.12 300);
+  --holo-lime: oklch(90% 0.18 130); /* acid accent */
+  --holo-grad: linear-gradient(
+    135deg,
+    var(--holo-cyan),
+    var(--holo-magenta),
+    var(--holo-lavender)
+  );
+  /* soft Frutiger-Aero canvas wash so transparent stickers pop */
+  --canvas-bg: linear-gradient(
+    160deg,
+    oklch(95% 0.03 220),
+    oklch(93% 0.05 320)
+  );
+
+  /* === CHROME LAYER: strict Win98 mono + OS blue (the disciplined layer) === */
+  --chrome-face: oklch(82% 0.005 250);
+  --chrome-light: oklch(98% 0 0); /* top/left bevel highlight */
+  --chrome-dark: oklch(52% 0.01 250); /* bottom/right bevel shadow */
+  --chrome-darker: oklch(38% 0.01 250); /* outer hard edge */
+  --chrome-text: oklch(20% 0 0);
+  --chrome-disabled: oklch(60% 0.005 250);
+  --title-grad: linear-gradient(
+    90deg,
+    oklch(45% 0.15 255),
+    oklch(70% 0.13 220)
+  ); /* iconic active title bar */
+  --title-grad-inactive: linear-gradient(
+    90deg,
+    oklch(60% 0.01 250),
+    oklch(72% 0.008 250)
+  );
+  --title-text: oklch(99% 0 0);
+  --os-blue: oklch(45% 0.15 255);
+  --selection: oklch(45% 0.15 255);
+
+  /* === TYPOGRAPHY ========================================================== */
+  --font-ui: "W95FA", "Tahoma", "Geneva", sans-serif; /* OS chrome */
+  --font-pixel: "DepartureMono", "Courier New", monospace; /* canvas display */
+  --font-body: system-ui, -apple-system, sans-serif; /* incidental */
+
+  --text-ui: clamp(0.8rem, 0.76rem + 0.2vw, 0.95rem);
+  --text-sm: clamp(0.7rem, 0.68rem + 0.1vw, 0.8rem);
+  --text-head: clamp(2rem, 1rem + 5vw, 5rem);
+  --text-boot: clamp(1.5rem, 0.8rem + 3vw, 3rem);
+
+  /* === SPACING ============================================================= */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* === BEVEL EDGES (Win98 chrome) ========================================== */
+  --bevel-out:
+    inset -1px -1px 0 0 var(--chrome-darker),
+    inset 1px 1px 0 0 var(--chrome-light),
+    inset -2px -2px 0 0 var(--chrome-dark), inset 2px 2px 0 0 var(--chrome-face);
+  --bevel-in:
+    inset 1px 1px 0 0 var(--chrome-darker),
+    inset -1px -1px 0 0 var(--chrome-light),
+    inset 2px 2px 0 0 var(--chrome-dark), inset -2px -2px 0 0 var(--chrome-face);
+  --bevel-thin-out:
+    inset -1px -1px 0 0 var(--chrome-dark),
+    inset 1px 1px 0 0 var(--chrome-light);
+  --bevel-thin-in:
+    inset 1px 1px 0 0 var(--chrome-dark),
+    inset -1px -1px 0 0 var(--chrome-light);
+
+  /* === MOTION ============================================================== */
+  --dur-fast: 120ms;
+  --dur-norm: 240ms;
+  --dur-slow: 480ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* === ATMOSPHERE (capped ≤ 4% so it reads as atmosphere, not noise) ======= */
+  --grain-opacity: 0.035;
+  --scanline-opacity: 0.04;
+
+  /* === LAYERING (z-index scale) ============================================ */
+  --z-canvas: 1;
+  --z-selection: 50;
+  --z-handles: 60;
+  --z-chrome: 100;
+  --z-drawer: 200;
+  --z-dialog: 300;
+  --z-boot: 1000;
+}
+
+/* The look is token-driven; reduced motion neutralizes the moving atmosphere. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-norm: 0ms;
+    --dur-slow: 0ms;
+  }
+}

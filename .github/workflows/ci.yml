@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Lint (Stylelint)
+        run: npm run stylelint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests + coverage
+        run: npm run test:cov
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build needs no real key; the proxy reads it at request time.
+          GIPHY_API_KEY: ${{ secrets.GIPHY_API_KEY }}

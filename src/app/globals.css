@@ -1,0 +1,49 @@
+@import "../styles/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--text-ui);
+  color: var(--chrome-text);
+  background: var(--chrome-face);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden; /* the OS shell owns its own scroll regions */
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+/* Always-visible, never-suppressed focus ring (a11y). */
+:focus-visible {
+  outline: 2px solid var(--os-blue);
+  outline-offset: 2px;
+}
+
+/* Utility: visually hidden but available to screen readers + aria-live. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
