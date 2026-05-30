@@ -53,8 +53,8 @@ export function angleOf(point: Vec2, center: Vec2): number {
 /** Rendered (scaled) half-extents of a node, before rotation. */
 export function halfExtents(node: StickerNode): Vec2 {
   return {
-    x: (node.baseWidth * node.scale) / 2,
-    y: (node.baseHeight * node.scale) / 2,
+    x: (node.baseWidth * node.scaleX) / 2,
+    y: (node.baseHeight * node.scaleY) / 2,
   };
 }
 

@@ -12,16 +12,15 @@ interface StickerNodeViewProps {
 
 /**
  * Renders a single sticker via the composed center-origin transform. Subscribes
- * to ONLY its own node slice and its own selected state, so moving or selecting
- * one sticker re-renders neither React siblings nor the canvas — the per-node
- * selector pattern from the perf budget.
+ * to ONLY its own node slice, so moving one sticker re-renders neither React
+ * siblings nor the canvas — the per-node selector pattern from the perf budget.
+ * Selection is drawn by the SelectionOverlay, not here.
  *
  * The transform is driven entirely by CSS custom properties, which lets the
  * drag hook write `--x`/`--y` straight to this DOM node during a gesture.
  */
 export function StickerNodeView({ id }: StickerNodeViewProps) {
   const node = useSceneStore((s) => s.nodes[id]);
-  const selected = useUiStore((s) => s.selectedId === id);
   const select = useUiStore((s) => s.select);
   const beginDrag = usePointerDrag(id);
 
@@ -31,7 +30,8 @@ export function StickerNodeView({ id }: StickerNodeViewProps) {
     "--x": `${node.x}px`,
     "--y": `${node.y}px`,
     "--rot": `${node.rotation}rad`,
-    "--scale": node.scale,
+    "--scale-x": node.scaleX,
+    "--scale-y": node.scaleY,
     "--base-w": `${node.baseWidth}px`,
     "--base-h": `${node.baseHeight}px`,
     zIndex: node.z + 1,
@@ -39,7 +39,7 @@ export function StickerNodeView({ id }: StickerNodeViewProps) {
 
   return (
     <div
-      className={`sticker${selected ? " is-selected" : ""}`}
+      className="sticker"
       style={style}
       data-node-id={node.id}
       onPointerDown={(e) => {

@@ -27,7 +27,8 @@ describe("useSceneStore", () => {
 
   it("defaults scale to fit the target width", () => {
     const id = useSceneStore.getState().add(baseInput); // base 200 → target 180
-    expect(useSceneStore.getState().nodes[id]?.scale).toBeCloseTo(0.9, 6);
+    expect(useSceneStore.getState().nodes[id]?.scaleX).toBeCloseTo(0.9, 6);
+    expect(useSceneStore.getState().nodes[id]?.scaleY).toBeCloseTo(0.9, 6);
   });
 
   it("does not mutate the previous nodes object (immutability)", () => {
@@ -94,10 +95,10 @@ describe("useSceneStore", () => {
 
   it("updateTransform patches only the targeted node", () => {
     const a = useSceneStore.getState().add(baseInput);
-    useSceneStore.getState().updateTransform(a, { rotation: 1.2, scale: 2 });
+    useSceneStore.getState().updateTransform(a, { rotation: 1.2, scaleX: 2 });
     const n = useSceneStore.getState().nodes[a];
     expect(n?.rotation).toBe(1.2);
-    expect(n?.scale).toBe(2);
+    expect(n?.scaleX).toBe(2);
   });
 
   it("supports undo/redo through the temporal store", () => {

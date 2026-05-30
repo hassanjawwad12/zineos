@@ -5,6 +5,7 @@ import "./canvas.css";
 import { useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
+import { SelectionOverlay } from "./SelectionOverlay";
 import { StickerNodeView } from "./StickerNodeView";
 
 /**
@@ -36,6 +37,7 @@ export function Canvas() {
       {order.map((id) => (
         <StickerNodeView key={id} id={id} />
       ))}
+      <SelectionOverlay />
     </main>
   );
 }

@@ -32,7 +32,7 @@ export interface AddStickerInput {
 }
 
 export type TransformPatch = Partial<
-  Pick<StickerNode, "x" | "y" | "scale" | "rotation">
+  Pick<StickerNode, "x" | "y" | "scaleX" | "scaleY" | "rotation">
 >;
 
 export interface SceneState {
@@ -82,6 +82,7 @@ export const useSceneStore = create<SceneState>()(
 
         add: (input) => {
           const id = makeId();
+          // Stickers start with a uniform scale fitting the target width.
           const scale =
             input.scale ??
             (input.baseWidth > 0 ? DEFAULT_TARGET_WIDTH / input.baseWidth : 1);
@@ -94,7 +95,8 @@ export const useSceneStore = create<SceneState>()(
             baseHeight: input.baseHeight,
             x: input.x ?? 0,
             y: input.y ?? 0,
-            scale,
+            scaleX: scale,
+            scaleY: scale,
             rotation: 0,
             z: get().order.length,
             title: input.title,

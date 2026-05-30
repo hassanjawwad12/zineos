@@ -74,8 +74,8 @@ function drawNode(
   originX: number,
   originY: number,
 ): void {
-  const w = node.baseWidth * node.scale;
-  const h = node.baseHeight * node.scale;
+  const w = node.baseWidth * node.scaleX;
+  const h = node.baseHeight * node.scaleY;
 
   ctx.save();
   // Translate to the node center in export space, rotate, then draw centered.

@@ -22,7 +22,8 @@ function makeNode(overrides: Partial<StickerNode> = {}): StickerNode {
     baseHeight: 40,
     x: 0,
     y: 0,
-    scale: 1,
+    scaleX: 1,
+    scaleY: 1,
     rotation: 0,
     z: 0,
     title: "",
@@ -74,7 +75,7 @@ describe("rotatedAABB", () => {
   });
 
   it("accounts for scale", () => {
-    const box = rotatedAABB(makeNode({ scale: 2 }));
+    const box = rotatedAABB(makeNode({ scaleX: 2, scaleY: 2 }));
     expect(box).toEqual({ minX: -100, minY: -40, maxX: 100, maxY: 40 });
   });
 

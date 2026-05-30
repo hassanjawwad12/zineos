@@ -12,7 +12,11 @@ export interface StickerNode {
   readonly baseHeight: number; // natural px (rendition height)
   readonly x: number; // center, canvas coords
   readonly y: number; // center, canvas coords
-  readonly scale: number; // uniform scale factor over base size
+  // Independent local-frame scale factors over the base size. Stored separately
+  // (not a single uniform scale) so resize handles can stretch one axis and the
+  // aspect-lock modifier is a real toggle, not the only mode.
+  readonly scaleX: number;
+  readonly scaleY: number;
   readonly rotation: number; // radians, clockwise
   readonly z: number; // stacking order (higher = front)
   readonly title: string; // sanitized, for a11y / export alt

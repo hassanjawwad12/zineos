@@ -1,0 +1,105 @@
+/* Selection overlay — a box that mirrors the node's rotated rect and carries
+   the transform handles. The box uses explicit px width/height (NOT scale), so
+   the handles stay a fixed size regardless of how large the sticker is. */
+.sel-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%) translate(var(--x), var(--y))
+    rotate(var(--rot));
+  border: 1px solid var(--os-blue);
+  pointer-events: none; /* only the handles are interactive */
+  z-index: var(--z-handles);
+}
+
+.sel-handle {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  background: var(--chrome-light);
+  border: 1px solid var(--os-blue);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: var(--bevel-thin-out);
+}
+
+.sel-handle--nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.sel-handle--n {
+  top: 0;
+  left: 50%;
+  cursor: ns-resize;
+}
+
+.sel-handle--ne {
+  top: 0;
+  left: 100%;
+  cursor: nesw-resize;
+}
+
+.sel-handle--e {
+  top: 50%;
+  left: 100%;
+  cursor: ew-resize;
+}
+
+.sel-handle--se {
+  top: 100%;
+  left: 100%;
+  cursor: nwse-resize;
+}
+
+.sel-handle--s {
+  top: 100%;
+  left: 50%;
+  cursor: ns-resize;
+}
+
+.sel-handle--sw {
+  top: 100%;
+  left: 0;
+  cursor: nesw-resize;
+}
+
+.sel-handle--w {
+  top: 50%;
+  left: 0;
+  cursor: ew-resize;
+}
+
+/* Rotation knob, floating above the top edge with a short connector. */
+.sel-rotate {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--os-blue);
+  border: 1px solid var(--chrome-light);
+  transform: translate(-50%, -180%);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+}
+
+.sel-rotate:active {
+  cursor: grabbing;
+}
+
+.sel-rotate::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 12px;
+  background: var(--os-blue);
+  transform: translateX(-50%);
+}

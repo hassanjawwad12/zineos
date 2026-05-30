@@ -16,7 +16,7 @@
   transform-origin: center;
   /* center → translate to position → rotate → scale */
   transform: translate(-50%, -50%) translate(var(--x), var(--y))
-    rotate(var(--rot)) scale(var(--scale));
+    rotate(var(--rot)) scale(var(--scale-x), var(--scale-y));
   will-change: auto;
   cursor: grab;
   touch-action: none;
@@ -33,11 +33,6 @@
   height: var(--base-h);
   pointer-events: none;
   -webkit-user-drag: none;
-}
-
-.sticker.is-selected {
-  outline: 1.5px dashed var(--os-blue);
-  outline-offset: 3px;
 }
 
 .canvas-empty {
