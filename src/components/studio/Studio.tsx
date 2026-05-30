@@ -102,10 +102,15 @@ export function Studio() {
       "",
       `?${SHARE_PARAM}=${encodeSceneToParam(scene)}`,
     );
-    navigator.clipboard?.writeText(shareUrl).then(
-      () => setStatus("share link copied to clipboard ✓"),
-      () => setStatus("share link is in the address bar"),
-    );
+    const copy = navigator.clipboard?.writeText(shareUrl);
+    if (copy) {
+      copy.then(
+        () => setStatus("share link copied to clipboard ✓"),
+        () => setStatus("share link is in the address bar"),
+      );
+    } else {
+      setStatus("share link is in the address bar");
+    }
   }
 
   async function addFromRawUrl(rawUrl: string) {
