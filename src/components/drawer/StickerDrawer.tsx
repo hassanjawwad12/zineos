@@ -2,9 +2,10 @@
 
 import "./drawer.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useDebounce } from "@/hooks/useDebounce";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useGiphySearch } from "@/hooks/useGiphySearch";
 import type { StickerResult as StickerResultData } from "@/lib/giphy/schema";
 import { useSceneStore } from "@/store/useSceneStore";
@@ -41,6 +42,9 @@ export function StickerDrawer() {
   const trimmed = debounced.trim();
   const search = useGiphySearch(trimmed);
 
+  const drawerRef = useRef<HTMLElement>(null);
+  useFocusTrap(drawerRef, open);
+
   if (!open) return null;
 
   function handlePick(result: StickerResultData) {
@@ -66,6 +70,7 @@ export function StickerDrawer() {
       }}
     >
       <section
+        ref={drawerRef}
         className="drawer"
         role="dialog"
         aria-modal="true"

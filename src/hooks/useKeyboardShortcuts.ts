@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { announce } from "@/store/useAnnouncer";
 import { useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
@@ -73,14 +74,24 @@ export function useKeyboardShortcuts() {
         }
         case "]": {
           e.preventDefault();
-          if (mod) scene.bringToFront(selectedId);
-          else scene.bringForward(selectedId);
+          if (mod) {
+            scene.bringToFront(selectedId);
+            announce("Moved to front");
+          } else {
+            scene.bringForward(selectedId);
+            announce("Moved forward");
+          }
           break;
         }
         case "[": {
           e.preventDefault();
-          if (mod) scene.sendToBack(selectedId);
-          else scene.sendBackward(selectedId);
+          if (mod) {
+            scene.sendToBack(selectedId);
+            announce("Moved to back");
+          } else {
+            scene.sendBackward(selectedId);
+            announce("Moved backward");
+          }
           break;
         }
         case "ArrowUp":

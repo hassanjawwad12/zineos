@@ -4,6 +4,7 @@ import "./studio.css";
 
 import { useState } from "react";
 
+import { LiveRegion } from "@/components/a11y/LiveRegion";
 import { BootScreen } from "@/components/boot/BootScreen";
 import { CRTOverlay } from "@/components/boot/CRTOverlay";
 import { Canvas } from "@/components/canvas/Canvas";
@@ -17,6 +18,7 @@ import { StickerDrawer } from "@/components/drawer/StickerDrawer";
 import { LayersPanel } from "@/components/layers/LayersPanel";
 import { useAutosave } from "@/hooks/useAutosave";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useStudioFeedback } from "@/hooks/useStudioFeedback";
 import { parseAllowedGiphyUrl } from "@/lib/giphy/ssrf";
 import { toProxiedUrl } from "@/lib/giphy/url";
 import {
@@ -63,6 +65,7 @@ function probeImage(src: string): Promise<Probe> {
 export function Studio() {
   useKeyboardShortcuts();
   useAutosave();
+  useStudioFeedback();
 
   const add = useSceneStore((s) => s.add);
   const clear = useSceneStore((s) => s.clear);
@@ -190,6 +193,7 @@ export function Studio() {
       <Taskbar onStart={() => setAboutOpen(true)} />
 
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <LiveRegion />
       <CRTOverlay />
       <BootScreen />
     </div>

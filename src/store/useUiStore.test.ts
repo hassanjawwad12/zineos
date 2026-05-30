@@ -3,7 +3,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useUiStore } from "./useUiStore";
 
 function reset() {
-  useUiStore.setState({ selectedId: null, drawerOpen: false, tool: "select" });
+  useUiStore.setState({
+    selectedId: null,
+    drawerOpen: false,
+    tool: "select",
+    soundEnabled: true,
+  });
 }
 
 describe("useUiStore", () => {
@@ -31,5 +36,13 @@ describe("useUiStore", () => {
   it("sets the active tool", () => {
     useUiStore.getState().setTool("select");
     expect(useUiStore.getState().tool).toBe("select");
+  });
+
+  it("toggles sound (default on)", () => {
+    expect(useUiStore.getState().soundEnabled).toBe(true);
+    useUiStore.getState().toggleSound();
+    expect(useUiStore.getState().soundEnabled).toBe(false);
+    useUiStore.getState().toggleSound();
+    expect(useUiStore.getState().soundEnabled).toBe(true);
   });
 });

@@ -16,6 +16,8 @@ export function MenuBar({ actions }: { actions: StudioActions }) {
   const hasNodes = useSceneStore((s) => s.order.length > 0);
   const hasSelection = useUiStore((s) => s.selectedId !== null);
   const drawerOpen = useUiStore((s) => s.drawerOpen);
+  const soundEnabled = useUiStore((s) => s.soundEnabled);
+  const toggleSound = useUiStore((s) => s.toggleSound);
 
   const file: (MenuItemDef | typeof MENU_SEP)[] = [
     { label: "Browse stickers…", onSelect: actions.openStickers },
@@ -52,6 +54,11 @@ export function MenuBar({ actions }: { actions: StudioActions }) {
     {
       label: drawerOpen ? "Hide sticker drawer" : "Show sticker drawer",
       onSelect: actions.openStickers,
+    },
+    MENU_SEP,
+    {
+      label: soundEnabled ? "Sound: on" : "Sound: off",
+      onSelect: toggleSound,
     },
   ];
 

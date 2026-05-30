@@ -1,5 +1,9 @@
 "use client";
 
+import { useRef } from "react";
+
+import { useFocusTrap } from "@/hooks/useFocusTrap";
+
 interface AboutDialogProps {
   open: boolean;
   onClose: () => void;
@@ -7,6 +11,9 @@ interface AboutDialogProps {
 
 /** Help → About. Doubles as the repo's elevator pitch (the 3-bullet story). */
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
+  const ref = useRef<HTMLElement>(null);
+  useFocusTrap(ref, open);
+
   if (!open) return null;
 
   return (
@@ -17,6 +24,7 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
       }}
     >
       <section
+        ref={ref}
         className="about"
         role="dialog"
         aria-modal="true"
