@@ -28,9 +28,16 @@
   color: transparent;
 }
 
+.studio-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 .studio-canvas-wrap {
   position: relative;
   flex: 1;
+  min-width: 0;
   min-height: 0;
 }
 

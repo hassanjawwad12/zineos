@@ -5,6 +5,8 @@ import "./studio.css";
 import { useState } from "react";
 
 import { Canvas } from "@/components/canvas/Canvas";
+import { StickerDrawer } from "@/components/drawer/StickerDrawer";
+import { LayersPanel } from "@/components/layers/LayersPanel";
 import { Button } from "@/components/ui/Button";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { toProxiedUrl } from "@/lib/giphy/url";
@@ -13,10 +15,10 @@ import { useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
 /**
- * Phase 0 studio shell. Proves the full pipeline end-to-end:
- *   paste/seed a GIPHY media URL → proxied same-origin → drawn on canvas →
- *   exported to a NON-tainted PNG.
- * Later phases replace the demo toolbar with the real OS chrome + drawer.
+ * Studio shell: toolbar + canvas + Layers panel, with the GIPHY sticker drawer
+ * overlaying when opened. The demo-sticker / paste-URL controls remain as a
+ * no-API-key fallback for the proxy; the chrome gets its full OS treatment in
+ * Phase 7.
  */
 
 // A stable, public GIPHY transparent sticker (no API key needed to fetch media).
@@ -53,6 +55,7 @@ export function Studio() {
   const order = useSceneStore((s) => s.order);
   const selectedId = useUiStore((s) => s.selectedId);
   const select = useUiStore((s) => s.select);
+  const toggleDrawer = useUiStore((s) => s.toggleDrawer);
 
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState("ready");
@@ -138,6 +141,9 @@ export function Studio() {
         aria-label="Studio controls"
       >
         <span className="brand">ZINEOS</span>
+        <Button variant="primary" onClick={toggleDrawer}>
+          🔍 Stickers
+        </Button>
         <Button disabled={busy} onClick={() => addFromRawUrl(DEMO_STICKER_URL)}>
           + Demo sticker
         </Button>
@@ -186,8 +192,12 @@ export function Studio() {
           {status}
         </span>
       </header>
-      <div className="studio-canvas-wrap">
-        <Canvas />
+      <div className="studio-body">
+        <div className="studio-canvas-wrap">
+          <Canvas />
+          <StickerDrawer />
+        </div>
+        <LayersPanel />
       </div>
     </div>
   );

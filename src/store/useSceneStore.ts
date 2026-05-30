@@ -44,6 +44,8 @@ export interface SceneState {
   updateTransform: (id: string, patch: TransformPatch) => void;
   bringToFront: (id: string) => void;
   sendToBack: (id: string) => void;
+  bringForward: (id: string) => void;
+  sendBackward: (id: string) => void;
   reorder: (id: string, toIndex: number) => void;
   duplicate: (id: string) => string | null;
   clear: () => void;
@@ -144,6 +146,16 @@ export const useSceneStore = create<SceneState>()(
             const order = [id, ...state.order.filter((nid) => nid !== id)];
             return { nodes: syncZ(state.nodes, order), order };
           });
+        },
+
+        bringForward: (id) => {
+          const idx = get().order.indexOf(id);
+          if (idx !== -1) get().reorder(id, idx + 1);
+        },
+
+        sendBackward: (id) => {
+          const idx = get().order.indexOf(id);
+          if (idx !== -1) get().reorder(id, idx - 1);
         },
 
         reorder: (id, toIndex) => {

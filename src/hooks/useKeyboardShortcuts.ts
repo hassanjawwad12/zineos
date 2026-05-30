@@ -71,6 +71,18 @@ export function useKeyboardShortcuts() {
           }
           break;
         }
+        case "]": {
+          e.preventDefault();
+          if (mod) scene.bringToFront(selectedId);
+          else scene.bringForward(selectedId);
+          break;
+        }
+        case "[": {
+          e.preventDefault();
+          if (mod) scene.sendToBack(selectedId);
+          else scene.sendBackward(selectedId);
+          break;
+        }
         case "ArrowUp":
         case "ArrowDown":
         case "ArrowLeft":

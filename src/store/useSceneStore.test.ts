@@ -113,6 +113,29 @@ describe("useSceneStore", () => {
     expect(useSceneStore.getState().nodes[a]?.x).toBe(500);
   });
 
+  it("bringForward moves a node up one step in z-order", () => {
+    const a = useSceneStore.getState().add(baseInput);
+    const b = useSceneStore.getState().add(baseInput);
+    const c = useSceneStore.getState().add(baseInput);
+    useSceneStore.getState().bringForward(a); // a:0 -> 1
+    expect(useSceneStore.getState().order).toEqual([b, a, c]);
+  });
+
+  it("sendBackward moves a node down one step in z-order", () => {
+    const a = useSceneStore.getState().add(baseInput);
+    const b = useSceneStore.getState().add(baseInput);
+    const c = useSceneStore.getState().add(baseInput);
+    useSceneStore.getState().sendBackward(c); // c:2 -> 1
+    expect(useSceneStore.getState().order).toEqual([a, c, b]);
+  });
+
+  it("bringForward at the front is a no-op", () => {
+    const a = useSceneStore.getState().add(baseInput);
+    const b = useSceneStore.getState().add(baseInput);
+    useSceneStore.getState().bringForward(b); // already frontmost
+    expect(useSceneStore.getState().order).toEqual([a, b]);
+  });
+
   it("getSceneSnapshot returns the live nodes + order", () => {
     const a = useSceneStore.getState().add(baseInput);
     const snap = getSceneSnapshot();
