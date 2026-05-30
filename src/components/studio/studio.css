@@ -3,29 +3,7 @@
   flex-direction: column;
   height: 100dvh;
   width: 100vw;
-}
-
-.studio-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--chrome-face);
-  box-shadow: var(--bevel-out);
-  z-index: var(--z-chrome);
-}
-
-.studio-toolbar .brand {
-  font-family: var(--font-pixel);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-right: var(--space-2);
-  background: var(--holo-grad);
-  background-clip: text;
-  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari needs this for text clip */
-  -webkit-background-clip: text;
-  color: transparent;
+  overflow: hidden;
 }
 
 .studio-body {
@@ -39,22 +17,4 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-}
-
-.studio-url-input {
-  flex: 1 1 220px;
-  min-width: 0;
-  padding: var(--space-1) var(--space-2);
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  background: var(--chrome-light);
-  border: none;
-  box-shadow: var(--bevel-thin-in);
-}
-
-.studio-status {
-  margin-left: auto;
-  font-size: var(--text-sm);
-  color: var(--chrome-disabled);
-  font-family: var(--font-pixel);
 }

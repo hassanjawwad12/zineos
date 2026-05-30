@@ -4,14 +4,21 @@ import "./studio.css";
 
 import { useState } from "react";
 
+import { BootScreen } from "@/components/boot/BootScreen";
+import { CRTOverlay } from "@/components/boot/CRTOverlay";
 import { Canvas } from "@/components/canvas/Canvas";
+import { AboutDialog } from "@/components/chrome/AboutDialog";
+import { MenuBar } from "@/components/chrome/MenuBar";
+import { StatusBar } from "@/components/chrome/StatusBar";
+import { Taskbar } from "@/components/chrome/Taskbar";
+import { Toolbar } from "@/components/chrome/Toolbar";
+import type { StudioActions } from "@/components/chrome/types";
 import { StickerDrawer } from "@/components/drawer/StickerDrawer";
 import { LayersPanel } from "@/components/layers/LayersPanel";
-import { Button } from "@/components/ui/Button";
 import { useAutosave } from "@/hooks/useAutosave";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { toProxiedUrl } from "@/lib/giphy/url";
 import { parseAllowedGiphyUrl } from "@/lib/giphy/ssrf";
+import { toProxiedUrl } from "@/lib/giphy/url";
 import {
   buildShareUrl,
   encodeSceneToParam,
@@ -21,10 +28,12 @@ import { getSceneSnapshot, useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
 /**
- * Studio shell: toolbar + canvas + Layers panel, with the GIPHY sticker drawer
- * overlaying when opened. The demo-sticker / paste-URL controls remain as a
- * no-API-key fallback for the proxy; the chrome gets its full OS treatment in
- * Phase 7.
+ * The OS shell: boot screen → menu bar · tool bar · [desktop: canvas + sticker
+ * window] · layers window · status bar · taskbar, all under a CRT overlay.
+ * Chrome stays strictly mono-gray + OS blue; all color lives on the canvas.
+ *
+ * Studio owns the cross-cutting handlers (proxy add, export, share) and hands a
+ * single `actions` object to the menu/tool bars.
  */
 
 // A stable, public GIPHY transparent sticker (no API key needed to fetch media).
@@ -59,53 +68,41 @@ export function Studio() {
   const clear = useSceneStore((s) => s.clear);
   const remove = useSceneStore((s) => s.remove);
   const duplicate = useSceneStore((s) => s.duplicate);
-  const order = useSceneStore((s) => s.order);
-  const selectedId = useUiStore((s) => s.selectedId);
   const select = useUiStore((s) => s.select);
-  const toggleDrawer = useUiStore((s) => s.toggleDrawer);
+  const setDrawerOpen = useUiStore((s) => s.setDrawerOpen);
 
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState("ready");
   const [busy, setBusy] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   function handleDelete() {
-    if (!selectedId) return;
-    remove(selectedId);
+    const id = useUiStore.getState().selectedId;
+    if (!id) return;
+    remove(id);
     select(null);
   }
 
   function handleDuplicate() {
-    if (!selectedId) return;
-    const newId = duplicate(selectedId);
+    const id = useUiStore.getState().selectedId;
+    if (!id) return;
+    const newId = duplicate(id);
     if (newId) select(newId);
   }
 
-  function undo() {
-    useSceneStore.temporal.getState().undo();
-  }
-
-  function redo() {
-    useSceneStore.temporal.getState().redo();
-  }
-
-  async function handleShare() {
+  function handleShare() {
     const scene = getSceneSnapshot();
     const base = window.location.origin + window.location.pathname;
     const shareUrl = buildShareUrl(scene, base);
-    // Reflect the scene in the address bar so a reload/bookmark restores it.
     window.history.replaceState(
       null,
       "",
       `?${SHARE_PARAM}=${encodeSceneToParam(scene)}`,
     );
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setStatus("share link copied to clipboard ✓");
-    } catch {
-      // Clipboard may be blocked (permissions/insecure context) — the URL is
-      // still in the address bar for the user to copy manually.
-      setStatus("share link is in the address bar");
-    }
+    navigator.clipboard?.writeText(shareUrl).then(
+      () => setStatus("share link copied to clipboard ✓"),
+      () => setStatus("share link is in the address bar"),
+    );
   }
 
   async function addFromRawUrl(rawUrl: string) {
@@ -119,15 +116,15 @@ export function Studio() {
     const src = toProxiedUrl(allowed.toString());
     try {
       const { width, height } = await probeImage(src);
+      const count = useSceneStore.getState().order.length;
       const id = add({
         giphyId: allowed.pathname,
         src,
         baseWidth: width,
         baseHeight: height,
         title: "sticker",
-        // light jitter so stacked adds don't perfectly overlap
-        x: (Math.sin(order.length * 1.7) * 60) | 0,
-        y: (Math.cos(order.length * 2.3) * 60) | 0,
+        x: (Math.sin(count * 1.7) * 60) | 0,
+        y: (Math.cos(count * 2.3) * 60) | 0,
       });
       select(id);
       setStatus(`added (${width}×${height})`);
@@ -139,7 +136,7 @@ export function Studio() {
   }
 
   async function handleExport() {
-    if (order.length === 0) {
+    if (useSceneStore.getState().order.length === 0) {
       setStatus("nothing to export");
       return;
     }
@@ -148,7 +145,6 @@ export function Studio() {
     try {
       // Dynamic import: the export module only loads when first used.
       const { downloadScenePng } = await import("@/lib/export/compose-canvas");
-      const { getSceneSnapshot } = await import("@/store/useSceneStore");
       await downloadScenePng(getSceneSnapshot());
       setStatus("exported ✓ (canvas not tainted)");
     } catch (err) {
@@ -160,72 +156,29 @@ export function Studio() {
     }
   }
 
+  const actions: StudioActions = {
+    openStickers: () => setDrawerOpen(!useUiStore.getState().drawerOpen),
+    addDemo: () => addFromRawUrl(DEMO_STICKER_URL),
+    duplicate: handleDuplicate,
+    remove: handleDelete,
+    undo: () => useSceneStore.temporal.getState().undo(),
+    redo: () => useSceneStore.temporal.getState().redo(),
+    clear,
+    share: handleShare,
+    exportPng: handleExport,
+    about: () => setAboutOpen(true),
+  };
+
   return (
     <div className="studio">
-      <header
-        className="studio-toolbar"
-        role="toolbar"
-        aria-label="Studio controls"
-      >
-        <span className="brand">ZINEOS</span>
-        <Button variant="primary" onClick={toggleDrawer}>
-          🔍 Stickers
-        </Button>
-        <Button disabled={busy} onClick={() => addFromRawUrl(DEMO_STICKER_URL)}>
-          + Demo sticker
-        </Button>
-        <input
-          className="studio-url-input"
-          placeholder="paste a giphy.com sticker URL…"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          aria-label="GIPHY sticker URL"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && url.trim()) addFromRawUrl(url.trim());
-          }}
-        />
-        <Button
-          disabled={busy || !url.trim()}
-          onClick={() => addFromRawUrl(url.trim())}
-        >
-          Add URL
-        </Button>
-        <Button
-          disabled={busy || selectedId === null}
-          onClick={handleDuplicate}
-        >
-          Duplicate
-        </Button>
-        <Button disabled={busy || selectedId === null} onClick={handleDelete}>
-          Delete
-        </Button>
-        <Button disabled={busy} onClick={undo} title="Undo (⌘Z)">
-          Undo
-        </Button>
-        <Button disabled={busy} onClick={redo} title="Redo (⇧⌘Z)">
-          Redo
-        </Button>
-        <Button disabled={busy || order.length === 0} onClick={() => clear()}>
-          Clear
-        </Button>
-        <Button
-          disabled={busy || order.length === 0}
-          onClick={handleShare}
-          title="Copy a shareable link to this collage"
-        >
-          Share
-        </Button>
-        <Button
-          variant="primary"
-          disabled={busy || order.length === 0}
-          onClick={handleExport}
-        >
-          Export PNG
-        </Button>
-        <span className="studio-status" role="status" aria-live="polite">
-          {status}
-        </span>
-      </header>
+      <MenuBar actions={actions} />
+      <Toolbar
+        actions={actions}
+        url={url}
+        onUrlChange={setUrl}
+        onAddUrl={() => addFromRawUrl(url.trim())}
+        busy={busy}
+      />
       <div className="studio-body">
         <div className="studio-canvas-wrap">
           <Canvas />
@@ -233,6 +186,12 @@ export function Studio() {
         </div>
         <LayersPanel />
       </div>
+      <StatusBar message={status} />
+      <Taskbar onStart={() => setAboutOpen(true)} />
+
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <CRTOverlay />
+      <BootScreen />
     </div>
   );
 }

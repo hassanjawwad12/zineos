@@ -1,0 +1,269 @@
+/* =============================================================================
+   OS chrome — strict mono-gray + OS blue (the disciplined layer). No canvas
+   color leaks up here; that contrast is the concept.
+   ============================================================================= */
+
+/* --- Menu bar --------------------------------------------------------------- */
+.menubar {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  padding: 1px var(--space-2);
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-thin-out);
+  position: relative;
+  z-index: var(--z-chrome);
+}
+
+.menubar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.menu {
+  position: relative;
+  display: flex;
+}
+
+.menu-trigger {
+  padding: var(--space-1) var(--space-3);
+  background: none;
+  border: none;
+  color: var(--chrome-text);
+}
+
+.menu-trigger:hover,
+.menu-trigger[aria-expanded="true"] {
+  background: var(--os-blue);
+  color: var(--title-text);
+}
+
+.menu-pop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  margin-top: 1px;
+  padding: var(--space-1);
+  list-style: none;
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-out);
+  z-index: var(--z-dialog);
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-6);
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  background: none;
+  border: none;
+  color: var(--chrome-text);
+  text-align: left;
+}
+
+.menu-item:hover:not(:disabled),
+.menu-item:focus-visible {
+  background: var(--os-blue);
+  color: var(--title-text);
+  outline: none;
+}
+
+.menu-item:disabled {
+  color: var(--chrome-disabled);
+}
+
+.menu-item .shortcut {
+  color: var(--chrome-disabled);
+  font-size: var(--text-sm);
+}
+
+.menu-item:hover .shortcut {
+  color: oklch(90% 0.02 250);
+}
+
+.menu-sep {
+  height: 0;
+  margin: var(--space-1) 2px;
+  border-top: 1px solid var(--chrome-dark);
+  border-bottom: 1px solid var(--chrome-light);
+}
+
+/* --- Tool bar --------------------------------------------------------------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-thin-out);
+  z-index: var(--z-chrome);
+}
+
+.toolbar-sep {
+  width: 0;
+  align-self: stretch;
+  margin: 2px var(--space-1);
+  border-left: 1px solid var(--chrome-dark);
+  border-right: 1px solid var(--chrome-light);
+}
+
+.toolbar-input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  background: var(--chrome-light);
+  border: none;
+  box-shadow: var(--bevel-thin-in);
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* --- Status bar ------------------------------------------------------------- */
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-thin-out);
+  font-size: var(--text-sm);
+}
+
+.statusbar-field {
+  padding: 1px var(--space-2);
+  box-shadow: var(--bevel-thin-in);
+  white-space: nowrap;
+  color: var(--chrome-text);
+}
+
+.statusbar-field--grow {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--os-blue);
+}
+
+/* --- Taskbar ---------------------------------------------------------------- */
+.taskbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-out);
+  z-index: var(--z-chrome);
+}
+
+.taskbar-start {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-weight: 700;
+  color: var(--title-text);
+  background: var(--title-grad);
+  border: none;
+  box-shadow: var(--bevel-out);
+}
+
+.taskbar-start:active {
+  box-shadow: var(--bevel-in);
+}
+
+.taskbar-win {
+  padding: var(--space-1) var(--space-3);
+  min-width: 120px;
+  text-align: left;
+  background: var(--chrome-face);
+  border: none;
+  box-shadow: var(--bevel-out);
+  color: var(--chrome-text);
+}
+
+.taskbar-win.is-active {
+  box-shadow: var(--bevel-in);
+  font-weight: 700;
+}
+
+.taskbar-clock {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-3);
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--bevel-thin-in);
+}
+
+/* --- About dialog ----------------------------------------------------------- */
+.about-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  display: grid;
+  place-items: center;
+  background: oklch(20% 0 0 / 0.35);
+}
+
+.about {
+  width: min(440px, 92vw);
+  background: var(--chrome-face);
+  box-shadow: var(--bevel-out);
+}
+
+.about-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--title-grad);
+  color: var(--title-text);
+  font-weight: 700;
+}
+
+.about-close {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  background: var(--chrome-face);
+  color: var(--chrome-text);
+  border: none;
+  box-shadow: var(--bevel-out);
+  line-height: 1;
+}
+
+.about-body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.about-logo {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: var(--text-head);
+  line-height: 1;
+}
+
+.about-body p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.about-body ul {
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
