@@ -31,7 +31,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
+      {/* Browser extensions (e.g. ColorZilla) inject attributes on <body>
+          before React hydrates; suppress that specific, harmless mismatch. */}
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

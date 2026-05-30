@@ -1,6 +1,7 @@
 "use client";
 
 import "./studio.css";
+import "@/components/chrome/chrome.css";
 
 import { useState } from "react";
 

@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
  * Security headers. Because GIPHY media is proxied through our own origin
  * (/api/giphy/image), the CSP can stay tight: img-src/connect-src 'self'.
  */
+const isDev = process.env.NODE_ENV !== "production";
+
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
@@ -11,7 +13,11 @@ const securityHeaders = [
       "default-src 'self'",
       // Next injects small inline bootstrap scripts; 'unsafe-inline' is the
       // pragmatic choice for the App Router without a custom nonce pipeline.
-      "script-src 'self' 'unsafe-inline'",
+      // React/Turbopack require 'unsafe-eval' in DEV only (debugging); the
+      // production policy stays tight (no eval).
+      isDev
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+        : "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self'",
