@@ -10,12 +10,13 @@ import { StickerNodeView } from "./StickerNodeView";
 /**
  * The creative canvas — the loud, holographic layer. Origin (0,0) is the canvas
  * center; nodes position relative to it so rotation/scale math stays simple.
+ *
+ * Subscribes to `order` only: adding/removing/reordering re-renders the canvas,
+ * but moving or selecting a sticker does not (each node owns its subscription).
  * Clicking empty space deselects.
  */
 export function Canvas() {
   const order = useSceneStore((s) => s.order);
-  const nodes = useSceneStore((s) => s.nodes);
-  const selectedId = useUiStore((s) => s.selectedId);
   const select = useUiStore((s) => s.select);
 
   return (
@@ -23,28 +24,18 @@ export function Canvas() {
       className="canvas"
       aria-label="Collage canvas"
       onPointerDown={(e) => {
-        if (e.target === e.currentTarget) select(null);
+        // Deselect when the gesture starts anywhere that isn't a sticker.
+        if (!(e.target as HTMLElement).closest(".sticker")) select(null);
       }}
     >
-      <div className="canvas-origin">
-        {order.length === 0 && (
-          <p className="canvas-empty">
-            empty canvas — add a sticker to start your zine
-          </p>
-        )}
-        {order.map((id) => {
-          const node = nodes[id];
-          if (!node) return null;
-          return (
-            <StickerNodeView
-              key={id}
-              node={node}
-              selected={id === selectedId}
-              onSelect={select}
-            />
-          );
-        })}
-      </div>
+      {order.length === 0 && (
+        <p className="canvas-empty">
+          empty canvas — add a sticker to start your zine
+        </p>
+      )}
+      {order.map((id) => (
+        <StickerNodeView key={id} id={id} />
+      ))}
     </main>
   );
 }

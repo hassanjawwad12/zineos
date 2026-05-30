@@ -8,12 +8,7 @@
   isolation: isolate;
 }
 
-/* Origin sits at the canvas center; nodes are positioned relative to it. */
-.canvas-origin {
-  position: absolute;
-  inset: 0;
-}
-
+/* Origin (0,0) sits at the canvas center; nodes position relative to it. */
 .sticker {
   position: absolute;
   left: 50%;
@@ -23,8 +18,13 @@
   transform: translate(-50%, -50%) translate(var(--x), var(--y))
     rotate(var(--rot)) scale(var(--scale));
   will-change: auto;
+  cursor: grab;
+  touch-action: none;
   user-select: none;
-  -webkit-user-drag: none;
+}
+
+.sticker:active {
+  cursor: grabbing;
 }
 
 .sticker img {

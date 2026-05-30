@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Canvas } from "@/components/canvas/Canvas";
 import { Button } from "@/components/ui/Button";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { toProxiedUrl } from "@/lib/giphy/url";
 import { parseAllowedGiphyUrl } from "@/lib/giphy/ssrf";
 import { useSceneStore } from "@/store/useSceneStore";
@@ -43,8 +44,12 @@ function probeImage(src: string): Promise<Probe> {
 }
 
 export function Studio() {
+  useKeyboardShortcuts();
+
   const add = useSceneStore((s) => s.add);
   const clear = useSceneStore((s) => s.clear);
+  const remove = useSceneStore((s) => s.remove);
+  const duplicate = useSceneStore((s) => s.duplicate);
   const order = useSceneStore((s) => s.order);
   const selectedId = useUiStore((s) => s.selectedId);
   const select = useUiStore((s) => s.select);
@@ -52,6 +57,26 @@ export function Studio() {
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState("ready");
   const [busy, setBusy] = useState(false);
+
+  function handleDelete() {
+    if (!selectedId) return;
+    remove(selectedId);
+    select(null);
+  }
+
+  function handleDuplicate() {
+    if (!selectedId) return;
+    const newId = duplicate(selectedId);
+    if (newId) select(newId);
+  }
+
+  function undo() {
+    useSceneStore.temporal.getState().undo();
+  }
+
+  function redo() {
+    useSceneStore.temporal.getState().redo();
+  }
 
   async function addFromRawUrl(rawUrl: string) {
     const allowed = parseAllowedGiphyUrl(rawUrl);
@@ -134,11 +159,18 @@ export function Studio() {
         </Button>
         <Button
           disabled={busy || selectedId === null}
-          onClick={() =>
-            selectedId && useSceneStore.getState().remove(selectedId)
-          }
+          onClick={handleDuplicate}
         >
+          Duplicate
+        </Button>
+        <Button disabled={busy || selectedId === null} onClick={handleDelete}>
           Delete
+        </Button>
+        <Button disabled={busy} onClick={undo} title="Undo (⌘Z)">
+          Undo
+        </Button>
+        <Button disabled={busy} onClick={redo} title="Redo (⇧⌘Z)">
+          Redo
         </Button>
         <Button disabled={busy || order.length === 0} onClick={() => clear()}>
           Clear

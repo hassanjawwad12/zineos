@@ -2,25 +2,31 @@
 
 import type { CSSProperties } from "react";
 
-import type { StickerNode } from "@/lib/scene/types";
+import { usePointerDrag } from "@/hooks/usePointerDrag";
+import { useSceneStore } from "@/store/useSceneStore";
+import { useUiStore } from "@/store/useUiStore";
 
 interface StickerNodeViewProps {
-  node: StickerNode;
-  selected: boolean;
-  onSelect: (id: string) => void;
+  id: string;
 }
 
 /**
- * Renders a single sticker via the composed center-origin transform. During
- * Phase 0 it is selectable but not yet draggable (drag arrives in Phase 1).
- * The transform is driven entirely by CSS custom properties so a gesture can
- * later write them directly to the DOM node, bypassing React.
+ * Renders a single sticker via the composed center-origin transform. Subscribes
+ * to ONLY its own node slice and its own selected state, so moving or selecting
+ * one sticker re-renders neither React siblings nor the canvas — the per-node
+ * selector pattern from the perf budget.
+ *
+ * The transform is driven entirely by CSS custom properties, which lets the
+ * drag hook write `--x`/`--y` straight to this DOM node during a gesture.
  */
-export function StickerNodeView({
-  node,
-  selected,
-  onSelect,
-}: StickerNodeViewProps) {
+export function StickerNodeView({ id }: StickerNodeViewProps) {
+  const node = useSceneStore((s) => s.nodes[id]);
+  const selected = useUiStore((s) => s.selectedId === id);
+  const select = useUiStore((s) => s.select);
+  const beginDrag = usePointerDrag(id);
+
+  if (!node) return null;
+
   const style = {
     "--x": `${node.x}px`,
     "--y": `${node.y}px`,
@@ -36,7 +42,10 @@ export function StickerNodeView({
       className={`sticker${selected ? " is-selected" : ""}`}
       style={style}
       data-node-id={node.id}
-      onPointerDown={() => onSelect(node.id)}
+      onPointerDown={(e) => {
+        select(id);
+        beginDrag(e);
+      }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- proxied,
           dynamically-sized canvas content; next/image gives no benefit here */}
