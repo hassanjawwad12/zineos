@@ -1,0 +1,31 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZINEOS">
+  <defs>
+    <!-- Y2K holographic wash (canvas layer) -->
+    <linearGradient id="holo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#74dce6"/>
+      <stop offset="0.5" stop-color="#f58fd1"/>
+      <stop offset="1" stop-color="#c4b0e6"/>
+    </linearGradient>
+    <!-- Win98 title-bar blue (chrome layer) -->
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2d4ea0"/>
+      <stop offset="1" stop-color="#5fa8d0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Beveled chrome window frame -->
+  <rect x="0" y="0" width="32" height="32" fill="#c9ced6"/>
+  <rect x="0" y="0" width="32" height="2" fill="#ffffff"/>
+  <rect x="0" y="0" width="2" height="32" fill="#ffffff"/>
+  <rect x="0" y="30" width="32" height="2" fill="#6b7480"/>
+  <rect x="30" y="0" width="2" height="32" fill="#6b7480"/>
+
+  <!-- Title bar -->
+  <rect x="4" y="4" width="24" height="5" fill="url(#title)"/>
+
+  <!-- Window body: holographic canvas + bold pixel Z -->
+  <rect x="4" y="10" width="24" height="18" fill="url(#holo)"/>
+  <rect x="4" y="10" width="24" height="18" fill="none" stroke="#2a2d33" stroke-width="1"/>
+  <path d="M8.5 14 H23.5 L8.5 24.5 H23.5" fill="none" stroke="#16161b"
+        stroke-width="3.2" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
