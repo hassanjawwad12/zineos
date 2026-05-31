@@ -68,18 +68,21 @@ export function Toolbar({
       <Button disabled={!hasNodes} onClick={actions.clear}>
         Clear
       </Button>
-      <Button disabled={!hasNodes} onClick={actions.share}>
-        Share
-      </Button>
 
       <span className="toolbar-spacer" />
 
       <Button
-        variant="primary"
         disabled={busy || !hasNodes}
         onClick={actions.exportPng}
       >
         Export PNG
+      </Button>
+      <Button
+        variant="primary"
+        disabled={busy || !hasNodes}
+        onClick={actions.exportGif}
+      >
+        Export GIF
       </Button>
     </div>
   );

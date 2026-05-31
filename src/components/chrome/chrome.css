@@ -22,6 +22,16 @@
   font-family: var(--font-pixel);
   font-weight: 700;
   letter-spacing: 0.06em;
+  /* Deeper, more saturated holo gradient — scoped to the brand only — so the
+     wordmark reads against the light-gray menubar. boot/About logos sit on dark
+     backgrounds and keep the global pastel --holo-grad. */
+  --holo-grad: linear-gradient(
+    135deg,
+    oklch(58% 0.17 200),
+    oklch(55% 0.24 350),
+    oklch(56% 0.19 300)
+  );
+  filter: drop-shadow(0 1px 0 oklch(100% 0 0 / 0.55));
 }
 
 .menu {

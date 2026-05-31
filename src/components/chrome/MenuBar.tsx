@@ -22,10 +22,14 @@ export function MenuBar({ actions }: { actions: StudioActions }) {
   const file: (MenuItemDef | typeof MENU_SEP)[] = [
     { label: "Browse stickers…", onSelect: actions.openStickers },
     MENU_SEP,
-    { label: "Share link", onSelect: actions.share, disabled: !hasNodes },
     {
       label: "Export PNG",
       onSelect: actions.exportPng,
+      disabled: !hasNodes,
+    },
+    {
+      label: "Export GIF (animated)",
+      onSelect: actions.exportGif,
       disabled: !hasNodes,
     },
     MENU_SEP,

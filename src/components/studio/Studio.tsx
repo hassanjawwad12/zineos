@@ -22,11 +22,6 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useStudioFeedback } from "@/hooks/useStudioFeedback";
 import { parseAllowedGiphyUrl } from "@/lib/giphy/ssrf";
 import { toProxiedUrl } from "@/lib/giphy/url";
-import {
-  buildShareUrl,
-  encodeSceneToParam,
-  SHARE_PARAM,
-} from "@/lib/scene/share-url";
 import { getSceneSnapshot, useSceneStore } from "@/store/useSceneStore";
 import { useUiStore } from "@/store/useUiStore";
 
@@ -35,7 +30,7 @@ import { useUiStore } from "@/store/useUiStore";
  * window] · layers window · status bar · taskbar, all under a CRT overlay.
  * Chrome stays strictly mono-gray + OS blue; all color lives on the canvas.
  *
- * Studio owns the cross-cutting handlers (proxy add, export, share) and hands a
+ * Studio owns the cross-cutting handlers (proxy add, export) and hands a
  * single `actions` object to the menu/tool bars.
  */
 
@@ -94,26 +89,6 @@ export function Studio() {
     if (newId) select(newId);
   }
 
-  function handleShare() {
-    const scene = getSceneSnapshot();
-    const base = window.location.origin + window.location.pathname;
-    const shareUrl = buildShareUrl(scene, base);
-    window.history.replaceState(
-      null,
-      "",
-      `?${SHARE_PARAM}=${encodeSceneToParam(scene)}`,
-    );
-    const copy = navigator.clipboard?.writeText(shareUrl);
-    if (copy) {
-      copy.then(
-        () => setStatus("share link copied to clipboard ✓"),
-        () => setStatus("share link is in the address bar"),
-      );
-    } else {
-      setStatus("share link is in the address bar");
-    }
-  }
-
   async function addFromRawUrl(rawUrl: string) {
     const allowed = parseAllowedGiphyUrl(rawUrl);
     if (!allowed) {
@@ -165,6 +140,27 @@ export function Studio() {
     }
   }
 
+  async function handleExportGif() {
+    if (useSceneStore.getState().order.length === 0) {
+      setStatus("nothing to export");
+      return;
+    }
+    setBusy(true);
+    setStatus("building animated gif… (a few seconds)");
+    try {
+      // Dynamic import: the GIF decoder/encoder only loads when first used.
+      const { downloadSceneGif } = await import("@/lib/export/compose-gif");
+      await downloadSceneGif(getSceneSnapshot());
+      setStatus("exported gif ✓ (motion preserved)");
+    } catch (err) {
+      setStatus(
+        `gif export failed: ${err instanceof Error ? err.message : "unknown"}`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const actions: StudioActions = {
     openStickers: () => setDrawerOpen(!useUiStore.getState().drawerOpen),
     addDemo: () => addFromRawUrl(DEMO_STICKER_URL),
@@ -173,8 +169,8 @@ export function Studio() {
     undo: () => useSceneStore.temporal.getState().undo(),
     redo: () => useSceneStore.temporal.getState().redo(),
     clear,
-    share: handleShare,
     exportPng: handleExport,
+    exportGif: handleExportGif,
     about: () => setAboutOpen(true),
   };
 

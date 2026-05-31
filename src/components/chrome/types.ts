@@ -7,7 +7,7 @@ export interface StudioActions {
   undo: () => void;
   redo: () => void;
   clear: () => void;
-  share: () => void;
   exportPng: () => void;
+  exportGif: () => void;
   about: () => void;
 }
